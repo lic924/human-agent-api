@@ -12,3 +12,23 @@ examples/manual_responses/
 examples/manual_discussion_responses/
 .DS_Store
 Thumbs.db
+
+# Local development sources and generated output; not needed by the integration API.
+AGENTS.md
+world-settings-guide.md
+data/raw/
+data/processed/
+data/index/generations/index-26765ae220846386-013a3d3e/
+examples/core_client_smoke/
+examples/discussion_responses/
+examples/live_responses/
+examples/responses/
+docs/github_delivery.md
+docs/integration_notes.md
+docs/manual_testing.md
+docs/research_report.md
+docs/retrieval_eval*.md
+docs/discussion_http_*.json
+docs/http_validation_*.json
+docs/manual_client_http.json
+docs/retrieval_eval_*.json

@@ -12,7 +12,7 @@
 1. `3f2e61c4-7543-42ea-a869-646cc7a869f1.md`：**世界共用設定：資源、轉換公式、Crew 互動，v0.12，2026-09-11**。世界數值、資源單位、死亡條件、工作占用與結算順序以此為準。
 2. `6817b305-2aa3-4821-8183-fdf73fbfc6f1.md`：**Human Survival Agent v3.0，含 2026-09-09 實作狀態**。沿用可驗證的檢索、provider、快取與 HTTP 工程；移除與新世界衝突的舊模型。
 
-世界文件提到的 `world-rules-spec.md`、世界程式、checks 腳本及舊 corpus 並未隨本次附件提供。本檔不假裝已讀過它們。Codex 若在重建目錄找到相關檔案，先比對；若與 v0.12 矛盾，記錄至 `docs/integration_notes.md`，不得默默更改遊戲公式。缺少檔案不阻止按本規格建立獨立服務。
+世界文件提到的 `world-rules-spec.md`、世界程式、checks 腳本及舊 corpus 並未隨本次附件提供。本檔不假裝已讀過它們。Codex 若在重建目錄找到相關檔案，先比對；若與 v0.12 矛盾，記錄至 `docs/core_handoff_alignment.md`，不得默默更改遊戲公式。缺少檔案不阻止按本規格建立獨立服務。
 
 權責：
 
@@ -379,7 +379,7 @@ Codex先檢查工作目錄是否有raw／processed／manifest／chunks／index�
 
 查核問題：3054 kcal基準的對象與活動、水3.217 L包含範圍、0.895 kg O₂基準條件；飲水與總用水差異；食物遊戲能量不等於完整營養；額外發電耗能是否與文獻活動重複。不得用搜尋摘要作已核對全文。
 
-輸出source_manifest.jsonl（title、authors、year/revision、URL、local_path、sha256、topics、access_status、exclusion_reason），parameter_review.md（世界值／來源值／適用條件／定位／核對狀態分欄），research_report.md（候選、納入、缺口與停止原因）。不繞付費牆、不編引文。
+輸出source_manifest.jsonl（title、authors、year/revision、URL、local_path、sha256、topics、access_status、exclusion_reason），parameter_review.md（世界值／來源值／適用條件／定位／核對狀態分欄）；研究过程紀錄可留在本機，不列入整合交付。不繞付費牆、不編引文。
 
 ### 8.4 檢索與向量索引
 
@@ -455,15 +455,15 @@ BRAIN_CLIENT_TIMEOUT_SECONDS=60
 3. 純函式crew餘裕、補給、比例發電、製水、階段核算及測試。
 4. API、mock、Core adapter、真實HTTP範例。
 5. Dense／BM25、live工具流程、deadline與引用驗證。
-6. 新世界場景驗收、README、integration_notes、實作狀態。
+6. 新世界場景驗收、README、Core 整合文件、實作狀態。
 
 必須產出：
 
 - `app/main.py`、schemas、settings、world_rules、human_calculator、plan_auditor、agent、retriever、embedding／LLM adapters。
-- `data/world_rules_v0.12.json`、來源manifest、原文／chunks／索引及metadata。
+- `data/world_rules_v0.12.json`、來源manifest、原文 chunks／目前索引及metadata；完整 PDF 與抽取中間檔屬本機可重建資產，不隨整合倉庫交付。
 - `scripts/prepare_corpus.py --local`、`scripts/build_index.py --mode dense|bm25|both [--offline]`、`scripts/check_providers.py`、`scripts/eval_retrieval.py`。
-- `examples/brain_client.py`（只HTTP，不import內部app）、schema2.0 request fixtures、實際產生的response。
-- `docs/api_migration.md`、`docs/integration_notes.md`、`docs/parameter_review.md`、`docs/research_report.md`、`docs/retrieval_eval.md`、`docs/validation_report.md`。
+- `examples/brain_client.py`（只HTTP，不import內部app）、schema2.0 request fixtures；實際產生的 response 留在本機，Git 忽略。
+- `docs/api_migration.md`、`docs/core_handoff_alignment.md`、`docs/START_TESTING.md`、`docs/parameter_review.md`、`docs/validation_report.md`；不保留重複的開發過程報告。
 - `.env.example`、`.gitignore`、依賴檔、README、tests，以及此spec末尾追加的新實作狀態。
 
 CLI旗標以上述名稱實作或提供相容別名；`build_index --offline`沒有完整向量cache時只允許BM25，不假裝能離線生成Voyage向量。既有不相關檔案不刪除，舊世界範例移至清楚標示的legacy目錄且預設不再使用。
@@ -563,110 +563,12 @@ python examples/brain_client.py --all
 最後更新本次重建狀態與現場啟動步驟，不沿用舊版測試結果宣稱新版本已完成。
 ```
 
-## 15. 本次重建結果（2026-09-12）
+## 15. 現行整合交付狀態（2026-09-12）
 
-本節記錄本次實際產物與執行結果，不改動上方 world v0.12／schema2.0 規格，也不沿用舊作者的38題、790向量或7,200tick結果。
+以 Core 已接受的 `docs/core_handoff_alignment.md` 為整合基準：`POST /discuss` 接收 Core v1.3 訊息，原 `/human-agent/analyze` 保留 Human 2.0。討論期間世界暫停，轉接缺省 planning／between_ticks；alive 未提供時保留未知。已知完整 current_plan 可映射，未知資訊不補造；人員與公共分析、单 tick 核算、RAG、Live 工具流程及三輪歷史評論已實作。
 
-- 初始盤點：只有spec、world-settings-guide、AGENTS與.env，沒有舊程式、raw、chunks、index或cache。已从零建立獨立Human Agent。
-- 已建立：`app/main.py`、`schemas.py`、`settings.py`、`world_rules.py`、`human_calculator.py`、`plan_auditor.py`、`agent.py`、`retriever.py`、`providers.py`；世界規則JSON與固定rule IDs；所有第11節必要scripts、文件、HTTP client、request fixtures、實際responses、依賴檔與測試。
-- 核算：Fraction處理基礎率與歸零邊界；個人與公共分帳、Core順序補給、工作占用、比例發電、製水、當tick原子灌溉／產氧／overflow／第三次失灌風險。正常coverage_end=`after_irrigation_before_crop_operations`。未建立世界step、Core／Plant、前端或多tick Simulator。
-- 規則：world0.12；rules_hash=`8cb7fc2c70beb48f7c3f2edec3819f33f4b4968f899b3e9f3eeed504ae4a2e93`。
-- 設定：既有PARAMETER_PROFILE從scientific遷移為world_v0_12；既有模型、端點與金鑰值均保留。LLM為gpt-6-astra，OpenAI官方端點使用Responses工具協定；embedding為OpenRouter voyageai/voyage-4、1024維、unspecified policy。兩組provider基本呼叫均已實測成功；預設AGENT_MODE仍為mock。
-- 資料：5份NASA原始PDF，SHA-256 manifest、選頁原文與393chunks；corpus=`corpus-4c40231326d1bc2b`，dense index=`index-26765ae220846386`。向量在`data/index/generations/`以immutable generation＋atomic current pointer發布。首次66個embedding batches，實際再次`build_index --mode both --offline`為0次新增embedding。
-- 核心文獻：已取得並核對BVAD Table3-31及相鄰說明的可讀文字，PDF72–73／印刷58–59。3.217為飲用／食物準備與活動補充的kg日量，0.895為kg氧日量；能量原文12.778MJ對應約3054真實kcal，遊戲單位映射仍由世界定義。其餘原文尚未逐頁／圖形視覺核對，research_status保留partial。
-- 測試：`python -m pytest -q`實際68 passed（包含T01–T29核心情境、provider故障、取消、引用與占用保護、cache增量／刪除／維度不相容及Responses工具往返）；沒有xfail承接歷史測試。
-- HTTP：`python examples/brain_client.py --all`與`python scripts/http_smoke.py`實際完成6個mock情境HTTP200；normal、critical、oxygen_early、refill_competition、irrigation_third_failure、partial的回應在`examples/responses/`，完整OpenAPI與JSON Schema已輸出。
-- Live：`python scripts/http_smoke.py --live`實際HTTP200、execution_mode=live、動態dense RAG＋get_world_rule＋audit_human_plan，3次LLM、1次embedding、3次工具，約27.6秒，回傳1條有audit_result_id的發電候選，無warnings。真實response在`examples/live_responses/normal.json`。
-- T29實際正常值：個人food_energy=2172.75、water≈1.3659583333333334；公共water=3000、food=120000、power=6552、oxygen≈8020.033333333334。Critical範例在base終止，後段not_reached，未發布假精確的完整終止state。
-- 檢索驗收：BM25 10/10；dense 9/10，精確水需求3.217題top-5未命中，命令如實回exit2，沒有把這一題列passed。結果在`docs/retrieval_eval*.json`；引用存在檢查與科學語意支持檢查分開，後者不宣稱全面自動驗證。
-- 尚待外部對齊／未測：正式Core／世界DTO及工具payload、fatal階段微順序、世界引擎差異測試、LAN第二台設備連線；官方Voyage與OpenRouter LLM遠端路徑未實測。PDF旋轉文字部分抽取不完整、完整科學來源支持性仍partial。詳見`docs/integration_notes.md`與`docs/validation_report.md`。
+單位換算為使用者確認的 1 EU = 3.9745 kWh，原世界係數不變。第二次失灌為 critical 但尚未死亡；第三次植物死亡時 audit 使用 unsafe_in_scope，不等於全員死亡。這些現行行為優先於較早重建要求中的籠統描述。
 
-現場啟動（專案根目錄，保留既有.env）：
+整合倉庫保留程式、測試、request 範例、現行契約／schemas、393 個原文 chunks、來源 manifest、BM25 與目前 dense 索引。完整 PDF、抽取中間檔、舊索引、歷史 response／測試報告和開發指示留在本機忽略目錄；原實作歷程已從本檔移除，Git 舊提交仍可追溯。原始資料可用保留的維護腳本重建，啟動服務不依賴这些檔案。
 
-```powershell
-python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-# 另開終端
-python examples/brain_client.py --all
-# GET /health、/docs、/openapi.json；POST /human-agent/analyze
-```
-
-欲使用live，在啟動終端設`$env:AGENT_MODE='live'`再啟動；無需把金鑰貼到命令或回覆。API啟動只載入索引，不會重新下載或付費建索引。隊友採用任何建議前仍須核對最新state_id／tick。
-
-## 16. Live 已知問題修正與最新驗收（2026-09-12）
-
-使用者已將.env改為live。本次保留該檔案全部內容與金鑰；現有5份原文、393chunks與1024維Voyage向量皆重用，corpus/index/rules hash不變，未重新付費嵌入corpus。
-
-已完成修正：
-
-- **檢索**：RETRIEVAL_MODE=dense且RETRIEVAL_FALLBACK=bm25時，正常流程以RRF合併排名，並以原文完整數字token＋查詢詞補回明確數值命中。回actual_mode=mixed、ranking_method=rrf_with_numeric_anchors；不假稱純dense提升。原3.217題已命中，同樣十題目前BM25與混合檢索各10/10。
-- **並行統計**：embedding_calls／cache_hits改成每request ContextVar；即使共享client／cache也不會互相累計，取消時清理context。已做並行單元測試與兩個真實live HTTP請求。
-- **LLM流程**：候選可用audit_result_id引用，後端補回完整plan及audit。給LLM的核算省去重複ledger，保留實際數字與致命條件，降低冗長JSON與超时機率；4次LLM／8次工具／45秒上限不變。
-- **文獻支持**：公開建議reason由固定規則與工具核算組裝，不將LLM自由生成的科學說法當成已認證文字。evidence.reviewed_claims列出兩段核心BVAD原文中4项有限結論，綁定精確chunk hash；原文改變就不繼承核對標記。其他原文仍標未全面語意認證。
-- **Core adapter**：HTTP client核對schema、rules、request_id、state_id、tick與for_tick；新增response_is_current供Core採用前對最新快照再檢查。純映射與錯版／過期回應拒絕已測試。人工response另存examples/manual_responses，避免覆寫驗收紀錄。
-
-最新實際結果：
-
-| 驗收 | 結果 |
-| --- | --- |
-| `python -m pytest -q` | **86 passed**，5.14秒 |
-| `python scripts/eval_retrieval.py --mode bm25` | **10/10** |
-| `python scripts/eval_retrieval.py --mode dense` | **10/10**，正常流程如實回mixed |
-| `python scripts/http_smoke.py --live --all` | **6/6 live HTTP通過**，無degraded／warnings |
-| `python scripts/http_smoke.py --live --concurrent` | **2/2並行live HTTP通過**，各自embedding_calls=1／cache_hits=0 |
-| 錯版／壞JSON、OpenAPI | 實際HTTP422／422／200 |
-
-六種live時間為normal23.301秒、critical16.282秒、oxygen_early6.015秒、refill_competition17.652秒、irrigation_third_failure12.961秒、partial5.500秒。兩個並行請求為18.551與19.276秒。所有個人／公共／人力／audit／risks欄位均與deterministic baseline比對一致，不因LLM而改動；不可救回的情境可以沒有建議，不要求強行產生救援。
-
-真實回應在examples/live_responses；摘要在docs/http_validation_live_all.json與docs/http_validation_live_concurrent.json。新版OpenAPI與JSON Schema已匯出，人工操作見docs/manual_testing.md。
-
-仍需外部配合：正式Core／世界DTO與引擎差異測試，以及第二台電腦的LAN連線。這些介面／設備不在目錄中，不能以本機契約測試冒充已串接。文獻全頁視覺校讀與任意科學語句認證不假稱完成；runtime只發布上述有限核對結論。這些限制不阻擋依manual_testing.md開始本機人工live測試。
-
-## 17. Core handoff v1.3 轉接（2026-09-12）
-
-依使用者提供的 `specialist-agent-api-handoff.md` v1.3 新增 `POST /discuss`；外層完全使用 Core 訊息格式，不加 schema_version／rules_version／diagnostics。原 Human API 2.0 仍可用。新增 `app/discussion_types.py` 與 `app/discussion.py`，共用原 Human 計算、RAG、LLM 工具與總預算，不新增世界操作或 Simulator。
-
-本次 Core 的 greenhouse-2026-09-12-v1 規則數值與本規格世界 v0.12 一致。轉接比對規則內容、版本與固定政策文字；派生每 tick 率容許 wire 浮點尾差，但存量／死亡判斷仍不改等號規則。Core 範例缺 crew[].alive、world.world_status、world.snapshot_phase，故原始範例回422；必須由 Core 補明確事實，不能以 adapter 預設值猜測。這三類欄位符合 Core 允許 world／crew 額外欄位的設計。
-
-Core 可省略 next_tick_plan／water_production_available，Human 只回可知分析與需求建議；要核算候選需提供完整且對應下一 tick 的 plan。Core 的 previous_messages 與追問送入模型，但不自動提升為權威狀態或基準排程。reviews 引用檢查同 discussion、world_version、較早 round 的真實 message_id／proposal_id。中文公開評估放入 decision_reason／reviews，不能當成世界操作或科學認證；量化候選仍由後端工具產生。
-
-成功回傳 Core 的 content 五欄、explanation 七欄與2–4句繁體中文 display_text。候選在 content 與 explanation 共用新 proposal_id。舊 analyze 的 provider 降級仍回原契約；discuss 因 Core 的失敗要求回502，外層44秒逾時回504，錯版409、結構錯誤422。
-
-驗證：110個單元／契約測試通過（10.65秒）；新增24個測試涵蓋規則比對、缺少真實狀態、ID／額外欄位、中文fixture、跨輪問題與引用、錯版／歷史／格式、失敗非2xx與不復活。Mock實際HTTP兩輪200。修正PowerShell產生fixture時中文變問號的問題後，重新完成Live兩輪：第一輪33.271秒，1個已核算候選；第二輪34.221秒，1個候選及2個真實前輪提案引用。每輪均為live、HTTP200、低於45秒。首次受限網路執行回502，取得網路執行核准後完成驗證，未暴露金鑰。
-
-真實回覆及第二輪請求存 `examples/discussion_responses/live/`；報告 `docs/discussion_http_live.json`／`docs/discussion_http_mock.json`。來源 Plant 訊息是明示測試 fixture，不冒稱隊友服務回覆。OpenAPI 與 Core request／response schema 已匯出；交接與啟動方式見 `docs/core_handoff_alignment.md`。原 Core 交接文件未改寫，`.env`／既有corpus與向量未改寫或重建。
-
-未完成：Core補足真實狀態欄位、確認共享發電比例／死亡微順序與本地唯讀工具的語意、正式plan DTO映射、Core／世界服務與跨電腦LAN聯測。另已查出植物第二次失灌警示分級與第三次失灌原計畫總結標籤的語意問題，列入交接文件，未在此次轉接中擅改世界規則；Core仍須查看critical／will_die，不能只看feasible_in_scope。
-
-## 18. 持續運行狀態澄清（2026-09-12）
-
-使用者確認目前世界持續運行，沒有規劃暫停流程，優先於交接文件的暫停敘述。`/discuss` 的 content.world.world_status 改為可省略、預設 running；明確狀態仍保留，不覆蓋死亡判定。Core仍需明示crew[].alive與snapshot_phase=between_ticks；快照表示一次完整tick邊界的狀態副本，不要求世界停止。原 Human API 2.0 的必填契約沒有更動。
-
-rules.planning 為Core流程描述，允許非空文字更新，消耗與死亡等世界規則仍逐項比對。世界持續前進時，慢速LLM回應的舊for_tick不可直接採用；Core需要依最新狀態重新驗證策略／安排。新增預設與流程描述測試，26個discussion測試通過（5.76秒），更新OpenAPI／schemas與交接文件；本次沒有重新呼叫Live模型。
-
-## 19. Human 配合 Core 實作與最新世界澄清（2026-09-12）
-
-本節取代第 17、18 節中仍需 Core 補 alive／snapshot_phase、預設 running 及植物風險待修的敘述。使用者最新確認：Agent 討論溝通期間世界暫停；1 EU ↔ 3.9745 kWh。
-
-已完成 Human 端適配：
-
-- `/discuss` 接受 Core 原始請求；world_status 缺省 planning，snapshot_phase 缺省 between_ticks，content.world 本身就是當次 snapshot，無需另外的物件或呼叫。
-- alive 選填、未知保持 null；不推定存活，不發布依賴未知存活的已驗證候選。一般問題與歷史評論仍可回 200，明確死亡不復活。原 Human API 2.0 請求仍保留原必填契約。
-- 支援可辨識的 world／content.current_plan（完整 Plan 或 candidate_plan 包裝）；過期、衝突、不完整表示保留供模型討論，不自動補排程或當作已指定計畫。未提供的正式 DTO 仍待取得後映射。
-- 規則 metadata 與一致的版本別名相容；數值、單位、布林與順序不相容仍拒絕。執行語意描述改變可討論但量化驗證標未知。explanation_schema 接受註解、required 排序及本地非循環引用差異，不宣稱支援所有等價變形。
-- 第二次連續失灌標 critical、尚未死亡；第三次植物死亡時 audit 為新增的 unsafe_in_scope，建議可行性為 infeasible。植物死亡不等於 crew 死亡，不觸發 Human 自行停止世界。
-- `data/unit_conversions.json` 及 `app/unit_conversions.py` 提供精確雙向換算，回覆附使用者確認來源及版本。6000 EU = 23847 kWh。power 輸入維持 EU，不改 world v0.12 發電／製水／灌溉係數或 rules_hash；kW 需時長才能換算能量。
-
-驗證：122 項單元／契約測試通過（10.61 秒）；原 Human 六種 mock HTTP 情境通過；Core 原始請求與兩輪 mock HTTP 均 200。Live 原始請求 25.046 秒、完整候選首輪 28.705 秒、追問第二輪 34.461 秒，全部 200 且低於 45 秒；第二輪兩項有效前輪評論。已更新 OpenAPI、schemas、README、交接說明及驗證報告；`.env` 未修改，corpus／向量沿用。
-
-尚未完成的是外部聯測與尚未提供的事實：Core 正式候選／死亡表示映射、世界共享發電及死亡微順序比對、真正 Core／Plant 服務與第二台設備 LAN。研究來源仍 partial，非本次宣稱完成的項目。未實作 Core、Plant、前端或世界 Simulator；Human 不發出暫停／恢復／執行指令。最新責任分工見 `docs/core_handoff_alignment.md`。
-
-## 20. Core 接受契約後的 Human 完整交付（2026-09-12）
-
-使用者回報 Core 已接受 `docs/core_handoff_alignment.md`，本版按該文件交付，不再將既有格式／公式列為等待確認才能啟用的條件。缺少 alive、設備狀態或完整候選時，沿用契約明示的未知／未驗證行為；Core 的接受不會被解讀為提供了不存在的世界事實。
-
-Human 的個人／公共分析、tick 核算、RAG、Live 工具流程、Core 訊息轉接與多輪評論已具備。此次補齊交付使用方式：Swagger `/discuss` 六種有效範例、七個可重建的邊界／current_plan 範例、独立 `examples/discussion_client.py`（讀取 JSON、最多三輪、引用檢查、顯示秒數、保存 request／response／metrics）、`docs/START_TESTING.md`。範例生成命令 `python scripts/make_discussion_examples.py` 不修改原始 Core 交接文件。
-
-本次驗證：130 項測試通過（13.26 秒）；Core 11 個 mock HTTP 案例、原 Human 六種 mock HTTP 情境通過；原始 Core Live 請求 22.689 秒，Live 三輪 28.533／31.750／34.135 秒，全部 200 且低於 45 秒，第二／三輪各含 2／3 項有效歷史提案評論。人工 CLI 亦透過獨立服務實際完成三輪 HTTP。OpenAPI／schemas 與交付文件已更新。
-
-啟動：`python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`；人工測試：`python examples/discussion_client.py --fixture current_plan`。仍需真實 Core／世界服務才能完成引擎差異與跨機聯測；此限制不阻擋目前 Human 單機人工測試。沒有擴大實作 Core、Plant、前端或世界 Simulator，沒有改寫 .env 或既有金鑰。
+驗證方式與結果統一見 `docs/validation_report.md`，人工測試見 `docs/START_TESTING.md`。本次精簡需從 Git index 匯出的乾淨副本驗證，以確保不誤用本機仍存在的 PDF／快取。金鑰和 .env 不修改、不提交。真正 Core／世界引擎及跨機 LAN 仍需雙方服務聯測；研究語意支持仍標 partial。

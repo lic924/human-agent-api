@@ -19,6 +19,7 @@ SOURCES = [
 ]
 
 async def main():
+    (ROOT/'data/raw').mkdir(parents=True,exist_ok=True)
     records=[]
     async with httpx.AsyncClient(timeout=55,follow_redirects=True) as client:
         for source in SOURCES:

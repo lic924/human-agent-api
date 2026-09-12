@@ -62,6 +62,7 @@ def prepare():
                 chunks.append({'document_id':record['document_id'],'chunk_id':chunk_id,'text':body,'title':record['title'],'source_url':record['url'],
                                'pdf_page':page,'printed_page':None,'section':'original page; printed page not transcribed',
                                'hash':text_hash,'verification_status':'full_text_acquired_support_not_automatically_verified'})
+        (ROOT/'data/processed').mkdir(parents=True,exist_ok=True)
         (ROOT/'data/processed'/ (record['document_id']+'.json')).write_text(json.dumps(processed,ensure_ascii=False),encoding='utf-8')
     if not chunks:
         print('No readable verified original text; missing: '+','.join(missing)); return 2
